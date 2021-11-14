@@ -103,21 +103,30 @@ const notesInitial=[
   
   //add a note
     const addNote=(title,description,tag)=>{
-      let note=null;
-      setNotes(notes.push(note));
+      console.log("added")
+      let note={
+        "_id": "618fbb7f3fde4ea0918cd485",
+        "user": "617e255e8bd1e16683ed446a",
+        "title": title,
+        "description": description,
+        "tag": tag,
+        "date": "2021-11-13T13:19:59.892Z",
+        "__v": 0
+      };
+      setNotes(notes.concat(note));
     }
 
 
     //delete a note
-const deleteNote=(title,description,tag)=>{
-      let note=null;
-      setNotes(notes.pop(note));
+const deleteNote=(id)=>{
+     let newNotes=notes.filter((note)=>{return note._id!==id})
+      setNotes(newNotes);
     }
 //edit a note
 
     const editNote=(title,description,tag)=>{
       let note=null;
-      setNotes(notes.push(note))
+      setNotes(notes.concat(note))
     }
 return (
 
