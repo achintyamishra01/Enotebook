@@ -3,11 +3,12 @@ const express=require ("express")
 connectToMongo();
 const app=express();
 const port=4000;
+var cors=require("cors");
 
 //used for dealing in json files (middleware)
 app.use(express.json());
 
-
+app.use(cors());
 
 app.get("/",(req,res)=>{
     res.send("hello")

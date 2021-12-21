@@ -1,11 +1,38 @@
 import React, { useEffect } from 'react'
-import { Link,useLocation } from 'react-router-dom'
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 function Navbar() {
-let location=useLocation();
-useEffect(()=>{
-    console.log(location.pathname)
-},[location])
-
+    const [userName, setUserName] = useState("")
+    const [userId, setUserId] = useState("")
+    let location = useLocation();
+    useEffect(() => {
+        console.log(location.pathname)
+    }, [location])
+    let history = useNavigate();
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        history('/login');
+    }
+    const handleClick = async (e) => {
+        e.preventDefault();
+        if (localStorage.getItem('token')) {
+            const response = await fetch("http://localhost:4000/api/auth/getuser", {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                    'auth-token': localStorage.token
+                },
+            })
+            const json = await response.json();
+            //  =json.name;
+            // console.log(userName)   
+            console.log(json);
+            setUserName(json.name);
+            setUserId(json.email);
+        }
+        // return json.name
+    }
     return (
         <div>
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -17,17 +44,43 @@ useEffect(()=>{
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item">
-                                <Link className={`nav-link ${(location.pathname==="/")?"active":""}  `} aria-current="page" to="/">Home</Link>
+                                <Link className={`nav-link ${(location.pathname === "/") ? "active" : ""}  `} aria-current="page" to="/">Home</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className={`nav-link ${(location.pathname==="/about")?"active":""}  `} to="/about">About</Link>
+                                <Link className={`nav-link ${(location.pathname === "/about") ? "active" : ""}  `} to="/about">About</Link>
                             </li>
-                            
+                           
                         </ul>
-                        <form className="d-flex">
-                            <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"></input>
-                            <button className="btn btn-outline-success" type="submit">Search</button>
-                        </form>
+                        {(!localStorage.getItem('token')) ?
+                            <form className="d-flex">
+
+
+                                <Link className="btn btn-primary mx-2" to="/login" role="button">Login</Link>
+                                <Link className="btn btn-primary mx-2" to="/signUp" role="button">SignUp</Link>
+                            </form> : (
+                                <form className='d-flex'>
+                                          <div className="btn-group">
+                                        <button type="button" className="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" onClick={handleClick}>
+                                            Accounts
+                                        </button>
+                                        <ul className="dropdown-menu dropdown-menu-dark p-2">
+                                            <li><b>User Name</b>: {userName}</li>
+                                            <li><b>User Id</b>: {userId}</li>
+                                            
+                                            
+                                           
+                                           
+                                        </ul>
+                                    </div>
+
+                                    <button onClick={handleLogout} className='btn btn-primary mx-4'>Logout</button>
+                                    {/* <!-- Example single danger button --> */}
+                                  
+                                </form>
+                            )
+
+                        }
+
                     </div>
                 </div>
             </nav>

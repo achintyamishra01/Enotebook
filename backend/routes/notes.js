@@ -25,7 +25,7 @@ router.post('/addnotes',fetchUser, [
 
   body('title', "Enter a valid title minimum length is 3").isLength({min:3}
   ),
-  body('description', "Description sjould be mnimum of 5 length ").isLength({min:5})
+  body('description', "Description should be mnimum of 5 length ").isLength({min:5})
   
   ], async (req, res) => {try {const {title,description,tag}=req.body;
   //code for error handling

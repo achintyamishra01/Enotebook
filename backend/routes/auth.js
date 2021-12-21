@@ -17,10 +17,11 @@ router.post('/createuser', [
   body('email', "Enter a valid Email").isEmail()
 
 ], async (req, res) => {
+  let success=false;
   //code for error handling
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({success, errors: errors.array() });
   }
   //here we willl check whether the user exist already or not
 
@@ -28,7 +29,7 @@ router.post('/createuser', [
     //checking whether a user is already present or not
     if (await User.findOne({ email: req.body.email })) {
 
-      return res.status(400).json({ errors: "Sorry a user exist with entered email id already" })
+      return res.status(400).json({success, errors: "Sorry a user exist with entered email id already" })
     }
     //generating hashed password;
 const salt = await bcrypt.genSaltSync(10);
@@ -59,8 +60,8 @@ const secured = await bcrypt.hashSync(req.body.password, salt);
 const authtoken=jwt.sign(data,jwt_secret);
 
 
-    
-    res.json({authtoken:authtoken })
+    success=true;
+    res.json({success,authtoken:authtoken })
 
   } 
   //catching errors
@@ -84,6 +85,7 @@ body('email', "Enter a valid Email").isEmail(),
 body('password', "Password cannot be blank").exists()
 
 ], async (req, res) => {
+  let success=false;
 //code for error handling
 const errors = validationResult(req);
 if (!errors.isEmpty()) {
@@ -94,11 +96,11 @@ const{email,password}=req.body;
 try {
   let user=await User.findOne({email});
   if(!User.findOne({email})){
-    return res.status(400).json({error:"invalid credentials"})
+    return res.status(400).json({success:success,error:"invalid credentials"})
   }
   const password_compare=await bcrypt.compare(password,user.password)
  if (!password_compare) {
-   return res.status(400).json({error:"invalid credentials"})
+   return res.status(400).json({success:success,error:"invalid credentials"})
  }
  const payload={
 user:{
@@ -106,7 +108,7 @@ user:{
 }  
 }
 const authtoken=jwt.sign(payload,jwt_secret);
-res.json({authtoken:authtoken })
+res.json({success:true,authtoken:authtoken })
 
 
 } catch (error) {
