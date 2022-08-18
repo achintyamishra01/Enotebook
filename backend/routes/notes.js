@@ -21,13 +21,9 @@ router.get('/fetchallnotes',fetchUser,async(req,res)=>{
 
 
 //Route 2 adding notes
-router.post('/addnotes',fetchUser, [
+router.post('/addnotes',fetchUser, 
 
-  body('title', "Enter a valid title minimum length is 3").isLength({min:3}
-  ),
-  body('description', "Description should be mnimum of 5 length ").isLength({min:5})
-  
-  ], async (req, res) => {try {const {title,description,tag}=req.body;
+async (req, res) => {try {const {title,description,tag}=req.body;
   //code for error handling
 const errors = validationResult(req);
 if (!errors.isEmpty()) {
@@ -36,6 +32,8 @@ return res.status(400).json({ errors: errors.array() });
 const note =new Notes({
 title,description,tag,user:req.user.id
 })
+
+
 const saveNote=await note.save();
 res.json(saveNote )
     
@@ -69,7 +67,7 @@ if(note.user.toString()!==req.user.id){
 }
 note =await Notes.findByIdAndUpdate(req.params.id,{$set:newNote},{new:true})
 res.json(note);
-})
+}) 
 
 
 //route 4 deleting a note
